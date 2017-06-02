@@ -1,0 +1,106 @@
+$ = jQuery;
+jQuery(document).ready(function() {
+			/* grab important elements */
+			var sortInput = jQuery('#sort_order');
+			var messageBox = jQuery('#message-box');
+			var product_list = jQuery('#sortable-list');
+			/* worker function */
+			var fnSubmit = function() {
+				var sortOrder = [];
+				product_list.children('li').each(function(){
+					sortOrder.push(jQuery(this).data('id'));
+				});
+				var product_order = sortOrder.join(',');
+				sortInput.val(product_order);
+				//alert(product_order);
+				//alert(ajaxurl);
+				update_order_option(page,product_order);
+				//alert(page);
+			};
+			/* store values */
+			product_list.children('li').each(function() {
+				var li = jQuery(this);
+				li.data('id',li.attr('title')).attr('title','');
+			});
+			/* sortables */
+			product_list.sortable({
+				opacity: 0.7,
+				update: function() {
+					fnSubmit();
+				}
+			});
+			//list.disableSelection();
+		});
+
+
+function add_to_cart(product_id)
+{
+	//alert(product_id);
+	var data = {'action': 'frontend_function','product': product_id };
+	jQuery.post(ajaxurl, data, function(response) {
+			//alert('Got this from the server: ' + response);
+			if(response.status == "success")
+			{
+				alert(response.cart_items);
+			}
+		},"json");
+}
+
+
+function update_order_option(page,order)
+{
+//alert(page);
+//alert(order);
+if(page == "enquiry")
+{
+	var data = { 'action': 'update_order','enquiry': order
+		};
+}
+else if(page=="product")
+{
+	var data = {'action': 'update_order','order': order };
+}
+else
+{
+var data = "";
+}
+
+		jQuery.post(ajaxurl, data, function(response) {
+			//alert('Got this from the server: ' + response);
+		});
+}
+function delete_order(order_id)
+{
+	//alert(order_id);
+
+
+
+	if(page == "enquiry")
+	{
+		var data= {'action': 'update_order','delete_enquiry': order_id};
+	}
+	else if(page=="product")
+	{
+		var data= {'action': 'update_order','delete_order': order_id};
+	}
+	else
+	{
+		var data = "";
+	}
+
+
+
+
+
+
+	jQuery.post(ajaxurl, data, function(response) {
+			alert(response);
+			if(response == "successful")
+			{
+				jQuery("#"+order_id+"_list").hide();
+			}
+		});
+}
+
+
+	
